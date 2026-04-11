@@ -1,0 +1,6 @@
+@CursoLog.WebApi_HostAddress = http://localhost:5054
+
+GET {{CursoLog.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

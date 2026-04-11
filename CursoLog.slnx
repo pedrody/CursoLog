@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CursoLog.WebApi/CursoLog.WebApi.csproj" />
+  </Folder>
+</Solution>

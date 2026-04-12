@@ -8,10 +8,10 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
 {
     public void Configure(EntityTypeBuilder<Review> builder)
     {
-        // TODO: Add unique index on (CourseId, UserId) after configuring ASP.NET Identity
-        // This will ensure that a user can only leave one review per course
-
         builder.HasKey(r => r.Id);
+
+        builder.HasIndex(r => new { r.CourseId, r.UserId })
+            .IsUnique();
 
         builder.Property(r => r.Rating)
             .IsRequired()
@@ -23,6 +23,11 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
         builder.HasOne(r => r.Course)
             .WithMany(c => c.Reviews)
             .HasForeignKey(r => r.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(r => r.User)
+            .WithMany(u => u.Reviews)
+            .HasForeignKey(r => r.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -9,17 +9,19 @@ public class Review : BaseEntity
     public Guid CourseId { get; private set; }
     public Course Course { get; private set; } = null!;
     public DateTime? UpdatedAt { get; private set; }
-    // TODO: UserId and User navigation property
+    public Guid UserId { get; private set; }
+    public ApplicationUser User { get; private set; } = null!;
 
     private Review() { }
 
-    public Review(Guid courseId, decimal rating, string? comment)
+    public Review(Guid courseId, decimal rating, string? comment, Guid userId)
     {
         ValidateRating(rating);
         Id = Guid.NewGuid();
         CourseId = courseId;
         Rating = rating;
         Comment = comment;
+        UserId = userId;
         CreatedAt = DateTime.UtcNow;
     }
 

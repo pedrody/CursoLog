@@ -21,7 +21,7 @@ public class TokenService : ITokenService
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Email, user.Email!),
+            new(ClaimTypes.Name, user.UserName!)
         };
 
         foreach (var role in roles)

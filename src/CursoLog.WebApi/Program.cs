@@ -1,5 +1,7 @@
 using CursoLog.WebApi.Data;
 using CursoLog.WebApi.Models;
+using CursoLog.WebApi.Services.Implementations;
+using CursoLog.WebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -47,6 +49,8 @@ builder.Services.AddAuthentication(options =>
         };
     });
 builder.Services.AddAuthorization();
+
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
 

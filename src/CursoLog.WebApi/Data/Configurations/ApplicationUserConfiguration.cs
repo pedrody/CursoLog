@@ -19,5 +19,9 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
 
         builder.Property(x => x.Bio)
             .HasMaxLength(200);
+
+        builder.HasIndex(x => x.RefreshToken).IsUnique();
+
+        builder.Property(x => x.RefreshToken).HasMaxLength(100);
     }
 }

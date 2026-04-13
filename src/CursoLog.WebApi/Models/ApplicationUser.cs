@@ -8,5 +8,7 @@ public class ApplicationUser : IdentityUser<Guid>
     public string? ProfilePictureUrl { get; set; }
     public string? Bio { get; set; }
     public ICollection<Review> Reviews { get; set; } = [];
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiryTime { get; set; }
     public DateTime RegisteredAt { get; set; }
 }

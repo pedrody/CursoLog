@@ -93,6 +93,13 @@ namespace CursoLog.WebApi.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<string>("RefreshToken")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("RegisteredAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -114,6 +121,9 @@ namespace CursoLog.WebApi.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("RefreshToken")
+                        .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
                 });

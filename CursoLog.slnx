@@ -2,4 +2,8 @@
   <Folder Name="/src/">
     <Project Path="src/CursoLog.WebApi/CursoLog.WebApi.csproj" />
   </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/CursoLog.UnitTests/">
+    <Project Path="tests/CursoLog.UnitTests/CursoLog.UniTests.csproj" />
+  </Folder>
 </Solution>

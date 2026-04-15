@@ -1,28 +1,28 @@
-﻿using CursoLog.WebApi.DTOs;
+﻿using CursoLog.WebApi.Constants;
+using CursoLog.WebApi.DTOs;
 using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentResults;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace CursoLog.WebApi.Services.Implementations;
 
 public class AuthService : IAuthService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IUserService _userService;
+    private readonly ISignInService _signInService;
     private readonly ITokenService _tokenService;
     private readonly IConfiguration _configuration;
 
-    public AuthService(UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
+    public AuthService(
         ITokenService tokenService,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IUserService userService,
+        ISignInService signInService)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
         _tokenService = tokenService;
         _configuration = configuration;
+        _userService = userService;
+        _signInService = signInService;
     }
 
     public async Task<Result<LoginResponse>> RegisterAsync(string username, string email, string password)
@@ -35,17 +35,17 @@ public class AuthService : IAuthService
         };
 
 
-        var result = await _userManager.CreateAsync(user, password);
+        var createResult = await _userService.CreateAsync(user, password);
 
-        if (!result.Succeeded)
-        {
-            var errors = result.Errors.Select(e => e.Description);
-            return Result.Fail(errors);
-        }
+        if (createResult.IsFailed)
+            return Result.Fail(createResult.Errors);
 
-        await _userManager.AddToRoleAsync(user, "User");
+        var addToRoleResult = await _userService.AddToRoleAsync(user, Roles.User);
 
-        var roles = await _userManager.GetRolesAsync(user);
+        if (addToRoleResult.IsFailed)
+            return Result.Fail(addToRoleResult.Errors);
+
+        var roles = await _userService.GetRolesAsync(user);
         string token = _tokenService.GenerateToken(user, roles);
         string refreshToken = _tokenService.GenerateRefreshToken();
 
@@ -56,17 +56,17 @@ public class AuthService : IAuthService
 
     public async Task<Result<LoginResponse>> LoginAsync(string email, string password)
     {
-        var user = await _userManager.FindByEmailAsync(email);
+        var user = await _userService.FindByEmailAsync(email);
 
         if (user is null)
             return Result.Fail("Invalid credentials.");
 
-        var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
+        var result = await _signInService.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
 
-        if (!result.Succeeded)
+        if (!result)
             return Result.Fail("Invalid credentials.");
 
-        var roles = await _userManager.GetRolesAsync(user);
+        var roles = await _userService.GetRolesAsync(user);
         var token = _tokenService.GenerateToken(user, roles);
         string refreshToken = _tokenService.GenerateRefreshToken();
 
@@ -77,7 +77,7 @@ public class AuthService : IAuthService
 
     public async Task<Result<LoginResponse>> RefreshAsync(string refreshToken)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+        var user = await _userService.FindByRefreshToken(refreshToken);
 
         if (user is null)
             return Result.Fail("Invalid refresh token.");
@@ -85,7 +85,7 @@ public class AuthService : IAuthService
         if (user.RefreshTokenExpiryTime <= DateTime.UtcNow)
             return Result.Fail("Refresh token has expired.");
 
-        var roles = await _userManager.GetRolesAsync(user);
+        var roles = await _userService.GetRolesAsync(user);
         var newToken = _tokenService.GenerateToken(user, roles);
         var newRefreshToken = _tokenService.GenerateRefreshToken();
 
@@ -98,6 +98,7 @@ public class AuthService : IAuthService
     {
         user.RefreshToken = newRefreshToken;
         user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_configuration.GetValue<int>("Jwt:RefreshTokenExpirationInDays"));
-        await _userManager.UpdateAsync(user);
+        
+        await _userService.UpdateAsync(user);
     }
 }

@@ -199,5 +199,87 @@ public class AuthServiceTests
         _tokenServiceMock.DidNotReceive().GenerateRefreshToken();
         await _userServiceMock.DidNotReceive().UpdateAsync(Arg.Any<ApplicationUser>());
     }
+
+    [Fact]
+    public async Task RefreshAsync_GivenValidRefreshToken_ThenShouldReturnNewTokenAndRefreshToken()
+    {
+        // Arrange
+        var refreshToken = Guid.NewGuid().ToString();
+        var newToken = Guid.NewGuid().ToString();
+        var newRefreshToken = Guid.NewGuid().ToString();
+        var user = new ApplicationUser { 
+            RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(1) 
+        };
+
+        _userServiceMock.FindByRefreshTokenAsync(refreshToken)
+            .Returns(user);
+        _tokenServiceMock.GenerateToken(Arg.Any<ApplicationUser>(),
+                Arg.Any<IList<string>>()).Returns(newToken);
+        _tokenServiceMock.GenerateRefreshToken().Returns(newRefreshToken);
+
+        // Act
+        var result = await _authService.RefreshAsync(refreshToken);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Token.Should().Be(newToken);
+        result.Value.RefreshToken.Should().Be(newRefreshToken);
+
+        Received.InOrder(() =>
+        {
+            _userServiceMock.FindByRefreshTokenAsync(refreshToken);
+            _userServiceMock.GetRolesAsync(Arg.Any<ApplicationUser>());
+            _tokenServiceMock.GenerateToken(Arg.Any<ApplicationUser>(), 
+                Arg.Any<IList<string>>());
+            _tokenServiceMock.GenerateRefreshToken();
+            _userServiceMock.UpdateAsync(Arg.Any<ApplicationUser>());
+        });
+    }
+
+    [Fact]
+    public async Task RefreshAsync_GivenAnUserNotFoundByRefreshToken_ThenShouldReturnFailureAndNotGenerateNewTokens()
+    {
+        // Arrange
+        var invalidRefreshToken = Guid.NewGuid().ToString();
+        var user = new ApplicationUser();
+
+        _userServiceMock.FindByRefreshTokenAsync(invalidRefreshToken).Returns(null as ApplicationUser);
+
+        // Act
+        var result = await _authService.RefreshAsync(invalidRefreshToken);
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+
+        await _userServiceMock.Received(1).FindByRefreshTokenAsync(invalidRefreshToken);
+        await _userServiceMock.DidNotReceive().GetRolesAsync(Arg.Any<ApplicationUser>());
+        _tokenServiceMock.DidNotReceive().GenerateToken(Arg.Any<ApplicationUser>(), Arg.Any<IList<string>>());
+        _tokenServiceMock.DidNotReceive().GenerateRefreshToken();
+        await _userServiceMock.DidNotReceive().UpdateAsync(Arg.Any<ApplicationUser>());
+    }
+
+    [Fact]
+    public async Task RefreshAsync_GivenAnExpiredRefreshToken_ThenShouldReturnFailureAndNotGenerateNewTokens()
+    {
+        // Arrange
+        var expiredRefreshToken = Guid.NewGuid().ToString();
+        var user = new ApplicationUser { 
+            RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(-1) 
+        };
+
+        _userServiceMock.FindByRefreshTokenAsync(expiredRefreshToken).Returns(user);
+
+        // Act
+        var result = await _authService.RefreshAsync(expiredRefreshToken);
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+
+        await _userServiceMock.Received(1).FindByRefreshTokenAsync(expiredRefreshToken);
+        await _userServiceMock.DidNotReceive().GetRolesAsync(Arg.Any<ApplicationUser>());
+        _tokenServiceMock.DidNotReceive().GenerateToken(Arg.Any<ApplicationUser>(), Arg.Any<IList<string>>());
+        _tokenServiceMock.DidNotReceive().GenerateRefreshToken();
+        await _userServiceMock.DidNotReceive().UpdateAsync(Arg.Any<ApplicationUser>());
+    }
 }
 

@@ -77,7 +77,7 @@ public class AuthService : IAuthService
 
     public async Task<Result<LoginResponse>> RefreshAsync(string refreshToken)
     {
-        var user = await _userService.FindByRefreshToken(refreshToken);
+        var user = await _userService.FindByRefreshTokenAsync(refreshToken);
 
         if (user is null)
             return Result.Fail("Invalid refresh token.");

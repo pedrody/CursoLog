@@ -44,7 +44,7 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task<ApplicationUser?> FindByRefreshToken(string refreshToken)
+    public async Task<ApplicationUser?> FindByRefreshTokenAsync(string refreshToken)
     {
         var result = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
 

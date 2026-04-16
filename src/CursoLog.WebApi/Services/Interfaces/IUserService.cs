@@ -10,6 +10,6 @@ public interface IUserService
     Task<Result> AddToRoleAsync(ApplicationUser user, string role);
     Task<IList<string>> GetRolesAsync(ApplicationUser user);
     Task<ApplicationUser?> FindByEmailAsync(string email);
-    Task<ApplicationUser?> FindByRefreshToken(string refreshToken);
+    Task<ApplicationUser?> FindByRefreshTokenAsync(string refreshToken);
     Task<Result> UpdateAsync(ApplicationUser user);
 }

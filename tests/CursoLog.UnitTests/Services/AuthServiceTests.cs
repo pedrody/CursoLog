@@ -122,7 +122,7 @@ public class AuthServiceTests
     }
 
     [Fact]
-    public async Task GivenValidCredentials_ThenShouldLoginCorrectly()
+    public async Task LoginAsync_GivenValidCredentials_ThenShouldLoginCorrectly()
     {
         // Arrange
         var email = _faker.Internet.Email();

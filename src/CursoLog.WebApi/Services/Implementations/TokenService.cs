@@ -1,7 +1,5 @@
 ﻿using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Services.Interfaces;
-using FluentResults;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,10 +11,12 @@ namespace CursoLog.WebApi.Services.Implementations;
 public class TokenService : ITokenService
 {
     private readonly IConfiguration _configuration;
+    private readonly ILogger<TokenService> _logger;
 
-    public TokenService(IConfiguration configuration)
+    public TokenService(IConfiguration configuration, ILogger<TokenService> logger)
     {
         _configuration = configuration;
+        _logger = logger;
     }
 
     public string GenerateToken(ApplicationUser user, IEnumerable<string> roles)
@@ -34,13 +34,18 @@ public class TokenService : ITokenService
         
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+        var expirationMinutes = _configuration.GetValue<int>("Jwt:ExpirationInMinutes");
+        var expiresAt = DateTime.UtcNow.AddMinutes(expirationMinutes);
+
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:ExpirationInMinutes")),
+            expires: expiresAt,
             signingCredentials: credentials
         );
+
+        _logger.LogInformation("Token JWT successfully generated for {Email}.", user.Email);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
@@ -50,6 +55,8 @@ public class TokenService : ITokenService
         var randomBytes = new byte[32];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
+
+        _logger.LogInformation("Refresh token successfully generated.");
         
         return Convert.ToBase64String(randomBytes);
     }

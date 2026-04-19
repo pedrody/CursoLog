@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using NSubstitute;
 using FluentResults;
 using CursoLog.WebApi.Constants;
+using Microsoft.Extensions.Logging;
 
 namespace CursoLog.UniTests.Services;
 
@@ -34,7 +35,8 @@ public class AuthServiceTests
         _tokenServiceMock = Substitute.For<ITokenService>();
         _userServiceMock = Substitute.For<IUserService>();
         _signInServiceMock = Substitute.For<ISignInService>();
-        _authService = new AuthService(_tokenServiceMock, _configurationMock, _userServiceMock, _signInServiceMock);
+        var loggerMock = Substitute.For<ILogger<AuthService>>();
+        _authService = new AuthService(_tokenServiceMock, _configurationMock, _userServiceMock, _signInServiceMock, loggerMock);
     }
 
     [Fact]

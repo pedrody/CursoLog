@@ -1,4 +1,5 @@
-﻿using CursoLog.WebApi.Models;
+﻿using CursoLog.WebApi.DTOs;
+using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +15,8 @@ public class UserService : IUserService
     {
         _userManager = userManager;
     }
+
+    // Identity operations
 
     public async Task<Result> CreateAsync(ApplicationUser user, string password)
     {
@@ -56,5 +59,45 @@ public class UserService : IUserService
         var result = await _userManager.UpdateAsync(user);
 
         return result.Succeeded ? Result.Ok() : Result.Fail(result.Errors.Select(e => e.Description));
+    }
+    
+    // Profile operations
+
+    public async Task<Result<UserProfileResponse>> GetUserProfileByIdAsync(Guid userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+
+        if (user is null)
+            return Result.Fail("User not found.");
+
+        var userProfileResponse = new UserProfileResponse
+        (
+            user.Id,
+            user.UserName!,
+            user.Name,
+            user.Bio,
+            user.ProfilePictureUrl,
+            user.RegisteredAt
+        );
+
+        return Result.Ok(userProfileResponse);
+    }
+
+    public async Task<Result> UpdateUserProfileAsync(Guid userId, string name, string? bio, string? profilePictureUrl)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+
+        if (user is null)
+            return Result.Fail("User not found.");
+
+        user.Name = name;
+        user.Bio = bio;
+        user.ProfilePictureUrl = profilePictureUrl;
+
+        var result = await _userManager.UpdateAsync(user);
+
+        return result.Succeeded 
+            ? Result.Ok() 
+            : Result.Fail(result.Errors.Select(e => e.Description));
     }
 }

@@ -1,5 +1,7 @@
 using CursoLog.WebApi.Data;
 using CursoLog.WebApi.Models;
+using CursoLog.WebApi.Repositories.Implementations;
+using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Implementations;
 using CursoLog.WebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -55,6 +57,9 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISignInService, SignInService>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Host.UseSerilog((context, configuration) => 
     configuration.ReadFrom.Configuration(context.Configuration));

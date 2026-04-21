@@ -30,7 +30,7 @@ public class PlatformController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<PlatformResponse>> GetAllPlatformsAsync()
+    public async Task<ActionResult<IEnumerable<PlatformResponse>>> GetAllPlatformsAsync()
     {
         var result = await _platformService.GetAllPlatformsAsync();
 

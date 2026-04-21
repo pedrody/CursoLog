@@ -5,6 +5,7 @@ namespace CursoLog.WebApi.Models;
 public class Course : BaseEntity
 {
     public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
     public string Url { get; set; } = string.Empty;
     public CoursePriceRange PriceRange { get; set; }
     public CourseDurationRange DurationRange { get; set; }

@@ -159,6 +159,10 @@ namespace CursoLog.WebApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(10000)
+                        .HasColumnType("character varying(10000)");
+
                     b.Property<string>("DurationRange")
                         .IsRequired()
                         .HasMaxLength(50)

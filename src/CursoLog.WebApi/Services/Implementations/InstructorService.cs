@@ -3,6 +3,7 @@ using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentResults;
+using System.Runtime.InteropServices;
 
 namespace CursoLog.WebApi.Services.Implementations;
 
@@ -82,7 +83,7 @@ public class InstructorService : IInstructorService
         }
 
         await _instructorRepository.DeleteAsync(instructor);
-
+        _logger.LogInformation("Instructor with ID {InstructorId} successfully deleted.", instructor.Id);
         return Result.Ok();
     }
 }

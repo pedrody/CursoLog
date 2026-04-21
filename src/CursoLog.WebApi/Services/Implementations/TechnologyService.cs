@@ -80,7 +80,7 @@ public class TechnologyService : ITechnologyService
         }
 
         await _technologyRepository.DeleteAsync(technology);
-
+        _logger.LogInformation("Technology with ID {TechnologyId} successfully deleted.", technology.Id);
         return Result.Ok();
     }
 }

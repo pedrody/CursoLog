@@ -78,7 +78,7 @@ public class PlatformService : IPlatformService
         }
 
         await _platformRepository.DeleteAsync(platform);
-
+        _logger.LogInformation("Platform with ID {PlatformId} successfully deleted.", platform.Id);
         return Result.Ok();
     }
 }

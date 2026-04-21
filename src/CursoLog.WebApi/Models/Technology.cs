@@ -4,9 +4,9 @@ namespace CursoLog.WebApi.Models;
 
 public class Technology : BaseEntity
 {
-    public string Name { get; private set; } = string.Empty;
-    public TechnologyType Type { get; private set; }
-    public string? LogoUrl { get; private set; }
+    public string Name { get; set; } = string.Empty;
+    public TechnologyType Type { get; set; }
+    public string? LogoUrl { get; set; }
     public ICollection<Course> Courses { get; set; } = [];
 
     private Technology() { }

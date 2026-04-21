@@ -1,9 +1,9 @@
-﻿using Bogus;
-using CursoLog.WebApi.Models;
+﻿using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Implementations;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 
@@ -18,7 +18,8 @@ public class CategoryServiceTests
     public CategoryServiceTests()
     {
         _categoryRepository = Substitute.For<ICategoryRepository>();
-        _categoryService = new CategoryService(_categoryRepository);
+        var loggerMock = Substitute.For<ILogger<CategoryService>>();
+        _categoryService = new CategoryService(_categoryRepository, loggerMock);
     }
 
     [Fact]

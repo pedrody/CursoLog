@@ -22,7 +22,7 @@ public class TechnologyService : ITechnologyService
     {
         var technologies = await _technologyRepository.GetAllAsync();
 
-        var technologiesResponse = technologies.Select(t => new TechnologyResponse(t.Id, t.Name, t.Type, t.LogoUrl));
+        var technologiesResponse = technologies.Select(t => new TechnologyResponse(t.Id, t.Name, t.Type));
 
         return Result.Ok(technologiesResponse);
     }
@@ -34,22 +34,22 @@ public class TechnologyService : ITechnologyService
         if (technology is null)
             return Result.Fail("Technology not found");
 
-        return Result.Ok(new TechnologyResponse(technology.Id, technology.Name, technology.Type, technology.LogoUrl));
+        return Result.Ok(new TechnologyResponse(technology.Id, technology.Name, technology.Type));
     }
 
-    public async Task<Result<TechnologyResponse>> AddTechnologyAsync(string name, TechnologyType type, string? logoUrl)
+    public async Task<Result<TechnologyResponse>> AddTechnologyAsync(string name, TechnologyType type)
     {
-        var technology = new Technology(name, type, logoUrl);
+        var technology = new Technology(name, type);
 
         await _technologyRepository.AddAsync(technology);
 
         _logger.LogInformation("Technology {TechnologyName} created successfully with ID {TechnologyId}.", technology.Name, technology.Id);
 
-        return Result.Ok(new TechnologyResponse(technology.Id, technology.Name, technology.Type, technology.LogoUrl));
+        return Result.Ok(new TechnologyResponse(technology.Id, technology.Name, technology.Type));
 
     }
 
-    public async Task<Result> UpdateTechnologyAsync(Guid id, string name, TechnologyType type, string? logoUrl)
+    public async Task<Result> UpdateTechnologyAsync(Guid id, string name, TechnologyType type)
     {
         var technology = await _technologyRepository.GetByIdAsync(id);
 
@@ -61,7 +61,6 @@ public class TechnologyService : ITechnologyService
 
         technology.Name = name;
         technology.Type = type;
-        technology.LogoUrl = logoUrl;
 
         await _technologyRepository.UpdateAsync(technology);
 

@@ -8,8 +8,8 @@ public interface ITechnologyService
 {
     Task<Result<TechnologyResponse>> GetTechnologyByIdAsync(Guid id);
     Task<Result<IEnumerable<TechnologyResponse>>> GetAllTechnologiesAsync();
-    Task<Result<TechnologyResponse>> AddTechnologyAsync(string name, TechnologyType type, string? logoUrl);
+    Task<Result<TechnologyResponse>> AddTechnologyAsync(string name, TechnologyType type);
     Task<Result> DeleteTechnologyAsync(Guid id);
-    Task<Result> UpdateTechnologyAsync(Guid id, string name, TechnologyType type, string? logoUrl);
+    Task<Result> UpdateTechnologyAsync(Guid id, string name, TechnologyType type);
 
 }

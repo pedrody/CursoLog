@@ -18,8 +18,5 @@ public class TechnologyConfiguration : IEntityTypeConfiguration<Technology>
             .IsRequired()
             .HasConversion<string>()
             .HasMaxLength(50);
-
-        builder.Property(t => t.LogoUrl)
-            .HasMaxLength(200);
     }
 }

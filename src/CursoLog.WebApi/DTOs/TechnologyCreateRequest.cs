@@ -2,4 +2,4 @@
 
 namespace CursoLog.WebApi.DTOs;
 
-public record TechnologyCreateRequest(string Name, TechnologyType Type, string? LogoUrl);
+public record TechnologyCreateRequest(string Name, TechnologyType Type);

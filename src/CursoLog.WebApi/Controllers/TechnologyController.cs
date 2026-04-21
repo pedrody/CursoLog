@@ -41,7 +41,7 @@ public class TechnologyController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TechnologyResponse>> AddTechnologyAsync([FromBody] TechnologyCreateRequest technology)
     {
-        var result = await _technologyService.AddTechnologyAsync(technology.Name, technology.Type, technology.LogoUrl);
+        var result = await _technologyService.AddTechnologyAsync(technology.Name, technology.Type);
 
         if (result.IsFailed)
             return BadRequest();
@@ -65,7 +65,7 @@ public class TechnologyController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateCategoryAsync(Guid id, [FromBody] TechnologyUpdateRequest technology)
     {
-        var result = await _technologyService.UpdateTechnologyAsync(id, technology.Name, technology.Type, technology.LogoUrl);
+        var result = await _technologyService.UpdateTechnologyAsync(id, technology.Name, technology.Type);
 
         if (result.IsFailed)
             return NotFound();

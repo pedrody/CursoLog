@@ -1,4 +1,5 @@
 ﻿using CursoLog.WebApi.DTOs;
+using CursoLog.WebApi.Extensions.Mappings;
 using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
@@ -21,7 +22,7 @@ public class PlatformService : IPlatformService
     {
         var platforms = await _platformRepository.GetAllAsync();
 
-        var platformsResponse = platforms.Select(p => new PlatformResponse(p.Id, p.Name, p.Url));
+        var platformsResponse = platforms.Select(p => p.ToPlatformResponse());
 
         return Result.Ok(platformsResponse);
     }
@@ -33,7 +34,7 @@ public class PlatformService : IPlatformService
         if (platform is null)
             return Result.Fail("Platform not found");
 
-        return Result.Ok(new PlatformResponse(platform.Id, platform.Name, platform.Url));
+        return Result.Ok(platform.ToPlatformResponse());
     }
     
     public async Task<Result<PlatformResponse>> AddPlatformAsync(string name, string url)
@@ -44,7 +45,7 @@ public class PlatformService : IPlatformService
 
         _logger.LogInformation("Platform {PlatformName} created successfully with ID {PlatformId}.", platform.Name, platform.Id);
 
-        return Result.Ok(new PlatformResponse(platform.Id, platform.Name, platform.Url));
+        return Result.Ok(platform.ToPlatformResponse());
     }
     
     public async Task<Result> UpdatePlatformAsync(Guid id, string name, string url)

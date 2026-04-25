@@ -1,4 +1,5 @@
 ﻿using CursoLog.WebApi.DTOs;
+using CursoLog.WebApi.Extensions.Mappings;
 using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
@@ -24,16 +25,14 @@ public class CategoryService : ICategoryService
         if (category is null)
             return Result.Fail("Category not found");
 
-        return Result.Ok(new CategoryResponse(category.Id, category.Name));
+        return Result.Ok(category.ToCategoryResponse());
     }
 
     public async Task<Result<IEnumerable<CategoryResponse>>> GetAllCategoriesAsync()
     {
         var categories = await _categoryRepository.GetAllAsync();
 
-        var categoriesResponse = categories.Select(c => new CategoryResponse(c.Id, c.Name));
-
-        return Result.Ok(categoriesResponse);
+        return Result.Ok(categories.Select(c => c.ToCategoryResponse()));
     }
 
     public async Task<Result<CategoryResponse>> AddCategoryAsync(string name)
@@ -44,7 +43,7 @@ public class CategoryService : ICategoryService
 
         _logger.LogInformation("Category {CategoryName} created successfully with ID {CategoryId}", category.Name, category.Id);
 
-        return Result.Ok(new CategoryResponse(category.Id, category.Name));
+        return Result.Ok(category.ToCategoryResponse());
     }
 
     public async Task<Result> DeleteCategoryAsync(Guid id)

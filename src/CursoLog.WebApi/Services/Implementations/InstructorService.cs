@@ -1,4 +1,5 @@
 ﻿using CursoLog.WebApi.DTOs;
+using CursoLog.WebApi.Extensions.Mappings;
 using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
@@ -22,7 +23,7 @@ public class InstructorService : IInstructorService
     {
         var instructors = await _instructorRepository.GetAllAsync();
 
-        var instructorsResponse = instructors.Select(i => new InstructorResponse(i.Id, i.Name, i.Bio, i.ProfileUrl));
+        var instructorsResponse = instructors.Select(i => i.ToInstructorResponse());
 
         return Result.Ok(instructorsResponse);
 
@@ -35,7 +36,7 @@ public class InstructorService : IInstructorService
         if (instructor is null)
             return Result.Fail("Instructor not found");
 
-        return Result.Ok(new InstructorResponse(instructor.Id, instructor.Name, instructor.Bio, instructor.ProfileUrl));
+        return Result.Ok(instructor.ToInstructorResponse());
     }
 
     public async Task<Result<InstructorResponse>> AddInstructorAsync(string name, string? bio, string? profileUrl)
@@ -46,7 +47,7 @@ public class InstructorService : IInstructorService
 
         _logger.LogInformation("Instructor {InstructorName} created successfully with ID {InstructorId}.", instructor.Name, instructor.Id);
 
-        return Result.Ok(new InstructorResponse(instructor.Id, instructor.Name, instructor.Bio, instructor.ProfileUrl));
+        return Result.Ok(instructor.ToInstructorResponse());
     }
 
     public async Task<Result> UpdateInstructorAsync(Guid id, string name, string? bio, string? profileUrl)

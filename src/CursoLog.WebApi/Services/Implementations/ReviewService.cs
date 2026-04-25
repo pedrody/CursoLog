@@ -1,4 +1,5 @@
 ﻿using CursoLog.WebApi.DTOs;
+using CursoLog.WebApi.Extensions.Mappings;
 using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Models.Exceptions;
 using CursoLog.WebApi.Repositories.Interfaces;
@@ -27,9 +28,7 @@ public class ReviewService : IReviewService
         if (review is null)
             return Result.Fail("Review not found");
 
-        return Result.Ok(new ReviewResponse(
-            review.Id, review.CourseId, review.Course.Name, review.UserId, review.User.UserName!,
-            review.Rating, review.Comment, review.UpdatedAt, review.CreatedAt));
+        return Result.Ok(review.ToReviewResponse());
     }
 
     public async Task<Result<IEnumerable<ReviewResponse>>> GetReviewsByCourseIdAsync(Guid courseId)
@@ -41,9 +40,7 @@ public class ReviewService : IReviewService
 
         var reviews = await _reviewRepository.GetByCourseIdAsync(courseId);
 
-        return Result.Ok(reviews.Select(r => new ReviewResponse(
-            r.Id, course.Id, course.Name, r.UserId, r.User.UserName!, 
-            r.Rating, r.Comment, r.UpdatedAt, r.CreatedAt)));
+        return Result.Ok(reviews.Select(r => r.ToReviewResponse()));
     }
 
     public async Task<Result<ReviewResponse>> AddReviewAsync(Guid userId, Guid courseId, decimal rating, string? comment)
@@ -70,9 +67,7 @@ public class ReviewService : IReviewService
 
         _logger.LogInformation("New review created for the course {CourseId} by the user {UserId}.", courseId, userId);
 
-        return Result.Ok(new ReviewResponse(
-            createdReview.Id, createdReview.CourseId, createdReview.Course.Name, createdReview.UserId, createdReview.User.UserName!,
-            createdReview.Rating, createdReview.Comment, createdReview.UpdatedAt, createdReview.CreatedAt));
+        return Result.Ok(createdReview.ToReviewResponse());
     }
 
     public async Task<Result> UpdateReviewAsync(Guid userId, Guid reviewId, decimal rating, string? comment)

@@ -1,4 +1,5 @@
 ﻿using CursoLog.WebApi.DTOs;
+using CursoLog.WebApi.Extensions.Mappings;
 using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Models.Enums;
 using CursoLog.WebApi.Repositories.Interfaces;
@@ -22,7 +23,7 @@ public class TechnologyService : ITechnologyService
     {
         var technologies = await _technologyRepository.GetAllAsync();
 
-        var technologiesResponse = technologies.Select(t => new TechnologyResponse(t.Id, t.Name, t.Type));
+        var technologiesResponse = technologies.Select(t => t.ToTechnologyResponse());
 
         return Result.Ok(technologiesResponse);
     }
@@ -34,7 +35,7 @@ public class TechnologyService : ITechnologyService
         if (technology is null)
             return Result.Fail("Technology not found");
 
-        return Result.Ok(new TechnologyResponse(technology.Id, technology.Name, technology.Type));
+        return Result.Ok(technology.ToTechnologyResponse());
     }
 
     public async Task<Result<TechnologyResponse>> AddTechnologyAsync(string name, TechnologyType type)
@@ -45,7 +46,7 @@ public class TechnologyService : ITechnologyService
 
         _logger.LogInformation("Technology {TechnologyName} created successfully with ID {TechnologyId}.", technology.Name, technology.Id);
 
-        return Result.Ok(new TechnologyResponse(technology.Id, technology.Name, technology.Type));
+        return Result.Ok(technology.ToTechnologyResponse());
 
     }
 

@@ -24,6 +24,7 @@ public class Course : BaseEntity
 
     public Course(
         string name,
+        string? description,
         string url,
         CoursePriceRange price,
         CourseDurationRange duration,
@@ -35,6 +36,7 @@ public class Course : BaseEntity
     {
         Id = Guid.NewGuid();
         Name = name;
+        Description = description;
         Url = url;
         PriceRange = price;
         DurationRange = duration;

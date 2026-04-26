@@ -30,6 +30,7 @@ public class ReviewServiceTests
 
         _course = new Course(
             "Course name",
+            "Course description",
             "https://www.example.com/course",
             CoursePriceRange.Free,
             CourseDurationRange.UnderFiveHours,

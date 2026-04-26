@@ -1,5 +1,6 @@
 ﻿using CursoLog.WebApi.Constants;
 using CursoLog.WebApi.DTOs.Course;
+using CursoLog.WebApi.Models.Enums;
 using CursoLog.WebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -92,5 +93,25 @@ public class CourseController : ControllerBase
             return NotFound();
 
         return NoContent();
+    }
+
+    [HttpGet("filterby")]
+    public async Task<ActionResult<IEnumerable<CourseListResponse>>> GetCoursesByFilterAsync(
+        [FromQuery] string? name,
+        [FromQuery] CoursePriceRange? priceRange,
+        [FromQuery] CourseDurationRange? durationRange,
+        [FromQuery] CourseLanguage? language,
+        [FromQuery] Guid? instructorId,
+        [FromQuery] Guid? platformId,
+        [FromQuery] Guid? categoryId,
+        [FromQuery] IEnumerable<Guid>? technologiesId,
+        [FromQuery] decimal? averageRating)
+    {
+        var result = await _courseService.GetCoursesByFilterAsync(
+                name, priceRange, durationRange, language, instructorId, 
+                platformId, categoryId, technologiesId, averageRating
+            );
+
+        return Ok(result);
     }
 }

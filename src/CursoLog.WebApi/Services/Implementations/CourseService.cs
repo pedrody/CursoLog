@@ -5,6 +5,7 @@ using CursoLog.WebApi.Models.Enums;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentResults;
+using System.Xml.Linq;
 
 namespace CursoLog.WebApi.Services.Implementations;
 
@@ -110,6 +111,18 @@ public class CourseService : ICourseService
         await _courseRepository.DeleteAsync(course);
 
         return Result.Ok();
+    }
+
+    public async Task<IEnumerable<CourseListResponse>> GetCoursesByFilterAsync(
+        string? name, CoursePriceRange? priceRange, CourseDurationRange? durationRange, 
+        CourseLanguage? language, Guid? instructorId, Guid? platformId, 
+        Guid? categoryId, IEnumerable<Guid>? technologiesId, decimal? averageRating)
+    {
+        var courses = await _courseRepository.GetByFilterAsync(
+            name, priceRange, durationRange, language, instructorId,
+            platformId, categoryId, technologiesId, averageRating);
+
+        return courses.Select(c => c.ToCourseListResponse());
     }
 
     private async Task<bool> InstructorExists(Guid id)

@@ -29,4 +29,8 @@ public interface ICourseService
         IEnumerable<Guid> technologiesId);
 
     Task<Result> DeleteCourseAsync(Guid id);
+    Task<IEnumerable<CourseListResponse>> GetCoursesByFilterAsync(
+        string? name, CoursePriceRange? priceRange, CourseDurationRange? durationRange,
+        CourseLanguage? language, Guid? instructorId, Guid? platformId,
+        Guid? categoryId, IEnumerable<Guid>? technologiesId, decimal? averageRating);
 }

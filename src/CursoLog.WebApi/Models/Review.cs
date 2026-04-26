@@ -4,13 +4,13 @@ namespace CursoLog.WebApi.Models;
 
 public class Review : BaseEntity
 {
-    public decimal Rating { get; private set; }
-    public string? Comment { get; private set; }
-    public Guid CourseId { get; private set; }
-    public Course Course { get; private set; } = null!;
-    public DateTime? UpdatedAt { get; private set; }
-    public Guid UserId { get; private set; }
-    public ApplicationUser User { get; private set; } = null!;
+    public decimal Rating { get; set; }
+    public string? Comment { get; set; }
+    public Guid CourseId { get; set; }
+    public Course Course { get; set; } = null!;
+    public DateTime? UpdatedAt { get; set; }
+    public Guid UserId { get; set; }
+    public ApplicationUser User { get; set; } = null!;
 
     private Review() { }
 

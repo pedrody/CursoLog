@@ -1,5 +1,6 @@
 ﻿using CursoLog.WebApi.DTOs;
 using CursoLog.WebApi.Models;
+using CursoLog.WebApi.Models.Errors;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
@@ -68,7 +69,7 @@ public class UserService : IUserService
         var user = await _userManager.FindByIdAsync(userId.ToString());
 
         if (user is null)
-            return Result.Fail("User not found.");
+            return Result.Fail(new NotFoundError("User not found"));
 
         var userProfileResponse = new UserProfileResponse
         (
@@ -88,7 +89,7 @@ public class UserService : IUserService
         var user = await _userManager.FindByIdAsync(userId.ToString());
 
         if (user is null)
-            return Result.Fail("User not found.");
+            return Result.Fail(new NotFoundError("User not found"));
 
         user.Name = name;
         user.Bio = bio;

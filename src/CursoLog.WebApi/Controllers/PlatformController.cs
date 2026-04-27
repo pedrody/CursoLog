@@ -1,5 +1,6 @@
 ﻿using CursoLog.WebApi.Constants;
 using CursoLog.WebApi.DTOs;
+using CursoLog.WebApi.Extensions;
 using CursoLog.WebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ public class PlatformController : ControllerBase
         var result = await _platformService.GetPlatformByIdAsync(id);
 
         if (result.IsFailed)
-            return NotFound();
+            return result.ToActionResult(this);
 
         return Ok(result.Value);
     }
@@ -43,9 +44,6 @@ public class PlatformController : ControllerBase
     {
         var result = await _platformService.AddPlatformAsync(platform.Name, platform.Url);
 
-        if (result.IsFailed)
-            return BadRequest();
-
         return new CreatedAtRouteResult("GetPlatform", new { id = result.Value.Id }, result.Value);
     }
 
@@ -56,7 +54,7 @@ public class PlatformController : ControllerBase
         var result = await _platformService.DeletePlatformAsync(id);
 
         if (result.IsFailed)
-            return NotFound();
+            return result.ToActionResult(this);
 
         return NoContent();
     }
@@ -68,7 +66,7 @@ public class PlatformController : ControllerBase
         var result = await _platformService.UpdatePlatformAsync(id, platform.Name, platform.Url);
 
         if (result.IsFailed)
-            return NotFound();
+            return result.ToActionResult(this);
 
         return NoContent();
     }

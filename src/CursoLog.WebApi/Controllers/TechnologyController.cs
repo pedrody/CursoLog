@@ -1,5 +1,6 @@
 ﻿using CursoLog.WebApi.Constants;
 using CursoLog.WebApi.DTOs;
+using CursoLog.WebApi.Extensions;
 using CursoLog.WebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,8 +24,8 @@ public class TechnologyController : ControllerBase
     {
         var result = await _technologyService.GetTechnologyByIdAsync(id);
 
-        if (result is null)
-            return NotFound();
+        if (result.IsFailed)
+            return result.ToActionResult(this);
 
         return Ok(result.Value);
     }
@@ -43,9 +44,6 @@ public class TechnologyController : ControllerBase
     {
         var result = await _technologyService.AddTechnologyAsync(technology.Name, technology.Type);
 
-        if (result.IsFailed)
-            return BadRequest();
-
         return new CreatedAtRouteResult("GetTechnology", new { id = result.Value.Id }, result.Value);
     }
 
@@ -56,7 +54,7 @@ public class TechnologyController : ControllerBase
         var result = await _technologyService.DeleteTechnologyAsync(Id);
 
         if (result.IsFailed)
-            return NotFound();
+            return result.ToActionResult(this);
 
         return NoContent();
     }
@@ -68,7 +66,7 @@ public class TechnologyController : ControllerBase
         var result = await _technologyService.UpdateTechnologyAsync(id, technology.Name, technology.Type);
 
         if (result.IsFailed)
-            return NotFound();
+            return result.ToActionResult(this);
 
         return NoContent();
     }

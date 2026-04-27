@@ -1,5 +1,6 @@
 ﻿using CursoLog.WebApi.Constants;
 using CursoLog.WebApi.DTOs.Course;
+using CursoLog.WebApi.Extensions;
 using CursoLog.WebApi.Models.Enums;
 using CursoLog.WebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +26,7 @@ public class CourseController : ControllerBase
         var result = await _courseService.GetCourseByIdAsync(id);
 
         if (result.IsFailed)
-            return NotFound();
+            return result.ToActionResult(this);
 
         return Ok(result.Value);
     }
@@ -34,9 +35,6 @@ public class CourseController : ControllerBase
     public async Task<ActionResult<IEnumerable<CourseListResponse>>> GetAllCoursesAsync()
     {
         var result = await _courseService.GetAllCoursesAsync();
-
-        if (result.IsFailed) 
-            return BadRequest();
 
         return Ok(result.Value);
     }
@@ -59,7 +57,7 @@ public class CourseController : ControllerBase
             request.TechnologiesId);
 
         if (result.IsFailed)
-            return BadRequest(new { errors = result.Errors.Select(e => e.Message) });
+            return result.ToActionResult(this);
 
         return Ok(result.Value);
     }
@@ -78,7 +76,7 @@ public class CourseController : ControllerBase
         );
 
         if (result.IsFailed)
-            return BadRequest(new { errors = result.Errors.Select(e => e.Message) });
+            return result.ToActionResult(this);
 
         return NoContent();
     }

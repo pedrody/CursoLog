@@ -1,6 +1,7 @@
 ﻿using CursoLog.WebApi.DTOs;
 using CursoLog.WebApi.Extensions.Mappings;
 using CursoLog.WebApi.Models;
+using CursoLog.WebApi.Models.Errors;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentResults;
@@ -32,7 +33,7 @@ public class PlatformService : IPlatformService
         var platform = await _platformRepository.GetByIdAsync(id);
 
         if (platform is null)
-            return Result.Fail("Platform not found");
+            return Result.Fail(new NotFoundError("Platform not found"));
 
         return Result.Ok(platform.ToPlatformResponse());
     }
@@ -55,7 +56,7 @@ public class PlatformService : IPlatformService
         if (platform is null)
         {
             _logger.LogWarning("Failed to update platform with ID {PlatformId}. Reason: platform not found.", id);
-            return Result.Fail("Platform not found");
+            return Result.Fail(new NotFoundError("Platform not found"));
         }
 
         platform.Name = name;
@@ -75,7 +76,7 @@ public class PlatformService : IPlatformService
         if (platform is null)
         {
             _logger.LogWarning("Failed to delete platform with ID {PlatformId}. Reason: platform not found.", id);
-            return Result.Fail("Platform not found");
+            return Result.Fail(new NotFoundError("Platform not found"));
         }
 
         await _platformRepository.DeleteAsync(platform);

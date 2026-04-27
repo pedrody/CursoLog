@@ -1,5 +1,6 @@
 ﻿using CursoLog.WebApi.Constants;
 using CursoLog.WebApi.DTOs;
+using CursoLog.WebApi.Extensions;
 using CursoLog.WebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ public class InstructorController : ControllerBase
         var result = await _instructorService.GetInstructorByIdAsync(id);
 
         if (result.IsFailed)
-            return NotFound();
+            return result.ToActionResult(this);
 
         return Ok(result.Value);
     }
@@ -45,9 +46,6 @@ public class InstructorController : ControllerBase
         var result = await _instructorService.AddInstructorAsync(
             instructor.Name, instructor.Bio, instructor.ProfileUrl);
 
-        if (result.IsFailed) 
-            return BadRequest();
-
         return new CreatedAtRouteResult(
             "GetInstructor", new { id = result.Value.Id }, result.Value);
     }
@@ -59,7 +57,7 @@ public class InstructorController : ControllerBase
         var result = await _instructorService.DeleteInstructorAsync(id);
 
         if (result.IsFailed) 
-            return NotFound();
+            return result.ToActionResult(this);
 
         return NoContent();
     }

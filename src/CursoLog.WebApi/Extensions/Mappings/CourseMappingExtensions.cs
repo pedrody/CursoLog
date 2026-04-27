@@ -38,7 +38,6 @@ public static class CourseMappingExtensions
             CalculateAverageRating(course.Reviews));
     }
 
-    // TODO: search and implement how to calculate average rating
     private static decimal CalculateAverageRating(ICollection<Review> reviews)
     {
         return reviews.Count != 0

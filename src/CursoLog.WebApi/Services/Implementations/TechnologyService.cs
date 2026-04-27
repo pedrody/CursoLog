@@ -2,6 +2,7 @@
 using CursoLog.WebApi.Extensions.Mappings;
 using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Models.Enums;
+using CursoLog.WebApi.Models.Errors;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentResults;
@@ -33,7 +34,7 @@ public class TechnologyService : ITechnologyService
         var technology = await _technologyRepository.GetByIdAsync(id); 
 
         if (technology is null)
-            return Result.Fail("Technology not found");
+            return Result.Fail(new NotFoundError("Technology not found"));
 
         return Result.Ok(technology.ToTechnologyResponse());
     }
@@ -57,7 +58,7 @@ public class TechnologyService : ITechnologyService
         if (technology is null)
         {
             _logger.LogWarning("Failed to update technology with ID {TechnologyId}. Reason: technology not found.", id);
-            return Result.Fail("Technology not found");
+            return Result.Fail(new NotFoundError("Technology not found"));
         }
 
         technology.Name = name;
@@ -77,7 +78,7 @@ public class TechnologyService : ITechnologyService
         if (technology is null)
         {
             _logger.LogWarning("Failed to delete technology with ID {TechnologyId}. Reason: technology not found.", id);
-            return Result.Fail("Technology not found");
+            return Result.Fail(new NotFoundError("Technology not found"));
         }
 
         await _technologyRepository.DeleteAsync(technology);

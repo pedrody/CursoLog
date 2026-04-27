@@ -2,6 +2,7 @@
 using CursoLog.WebApi.Extensions.Mappings;
 using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Models.Enums;
+using CursoLog.WebApi.Models.Errors;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentResults;
@@ -36,7 +37,7 @@ public class CourseService : ICourseService
         var course = await _courseRepository.GetByIdAsync(id);
 
         if (course is null)
-            return Result.Fail("Course not found");
+            return Result.Fail(new NotFoundError("Course not found"));
 
         return Result.Ok(course.ToCourseDetailResponse());
     }
@@ -51,13 +52,13 @@ public class CourseService : ICourseService
     public async Task<Result<CourseDetailResponse>> AddCourseAsync(string name, string? description, string url, CoursePriceRange priceRange, CourseDurationRange durationRange, CourseLanguage language, string? thumbnailUrl, Guid instructorId, Guid platformId, Guid categoryId, IEnumerable<Guid> technologiesId)
     {
         if (!await InstructorExists(instructorId))
-            return Result.Fail("Instructor not found");
+            return Result.Fail(new NotFoundError("Instructor not found"));
 
         if (!await PlatformExists(platformId))
-            return Result.Fail("Platform not found");
+            return Result.Fail(new NotFoundError("Platform not found"));
 
         if (!await CategoryExists(categoryId))
-            return Result.Fail("Category not found");
+            return Result.Fail(new NotFoundError("Category not found"));
 
         var technologies = new List<Technology>();
         foreach (Guid id in technologiesId)
@@ -82,7 +83,7 @@ public class CourseService : ICourseService
         var course = await _courseRepository.GetByIdAsync(id);
 
         if (course is null)
-            return Result.Fail("Course not found");
+            return Result.Fail(new NotFoundError("Course not found"));
 
         course.Name = name;
         course.Description = description;
@@ -106,7 +107,7 @@ public class CourseService : ICourseService
         var course = await _courseRepository.GetByIdAsync(id);
 
         if (course is null)
-            return Result.Fail("Course not found");
+            return Result.Fail(new NotFoundError("Course not found"));
 
         await _courseRepository.DeleteAsync(course);
 

@@ -1,6 +1,6 @@
 ﻿using CursoLog.WebApi.DTOs;
+using CursoLog.WebApi.Extensions;
 using CursoLog.WebApi.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CursoLog.WebApi.Controllers;
@@ -22,9 +22,7 @@ public class AuthController : ControllerBase
         var result = await _authService.RegisterAsync(request.username, request.email, request.password);
 
         if (result.IsFailed)
-        {
-            return BadRequest(new { errors = result.Errors.Select(e => e.Message) });
-        }
+            return result.ToActionResult(this);
 
         return Ok(result.Value);
     }
@@ -35,7 +33,7 @@ public class AuthController : ControllerBase
         var result = await _authService.LoginAsync(request.email, request.password);
 
         if (result.IsFailed)
-            return BadRequest(new { errors = result.Errors.Select(e => e.Message) });
+            return result.ToActionResult(this);
 
         return Ok(result.Value);
     }
@@ -46,7 +44,7 @@ public class AuthController : ControllerBase
         var result = await _authService.RefreshAsync(request.RefreshToken);
 
         if (result.IsFailed)
-            return BadRequest(new { errors = result.Errors.Select(e => e.Message) });
+            return result.ToActionResult(this);
 
         return Ok(result.Value);
     }

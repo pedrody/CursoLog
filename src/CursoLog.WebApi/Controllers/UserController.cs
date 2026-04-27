@@ -1,4 +1,5 @@
 ﻿using CursoLog.WebApi.DTOs;
+using CursoLog.WebApi.Extensions;
 using CursoLog.WebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ public class UserController : ControllerBase
         var userId = GetUserIdFromJwtToken();
         var result = await _userService.GetUserProfileByIdAsync(userId);
 
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(new { result.Errors });
+        return result.IsSuccess ? Ok(result.Value) : result.ToActionResult(this);
     }
 
 
@@ -34,7 +35,7 @@ public class UserController : ControllerBase
         var userId = GetUserIdFromJwtToken();
         var result = await _userService.UpdateUserProfileAsync(userId, userProfile.Name, userProfile.Bio, userProfile.ProfilePictureUrl);
 
-        return result.IsSuccess ? NoContent() : BadRequest(new { result.Errors });
+        return result.IsSuccess ? NoContent() : result.ToActionResult(this);
     }
     private Guid GetUserIdFromJwtToken()
     {

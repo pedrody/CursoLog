@@ -1,5 +1,6 @@
 ﻿using CursoLog.WebApi.Constants;
 using CursoLog.WebApi.DTOs;
+using CursoLog.WebApi.Extensions;
 using CursoLog.WebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ public class CategoryController : ControllerBase
         var result = await _categoryService.GetCategoryByIdAsync(id);
 
         if (result.IsFailed)
-            return NotFound();
+            return result.ToActionResult(this);
 
         return Ok(result.Value);
     }
@@ -42,7 +43,7 @@ public class CategoryController : ControllerBase
         var result = await _categoryService.AddCategoryAsync(category.Name);
 
         if (result.IsFailed)
-            return BadRequest();
+            return result.ToActionResult(this);
 
         return new CreatedAtRouteResult("GetCategory", new { id = result.Value.Id }, result.Value);
     }
@@ -54,7 +55,7 @@ public class CategoryController : ControllerBase
         var result = await _categoryService.DeleteCategoryAsync(id);
 
         if (result.IsFailed)
-            return NotFound();
+            return result.ToActionResult(this);
 
         return NoContent();
     }
@@ -66,7 +67,7 @@ public class CategoryController : ControllerBase
         var result = await _categoryService.UpdateCategoryAsync(id, category.Name);
 
         if (result.IsFailed)
-            return NotFound();
+            return result.ToActionResult(this);
 
         return NoContent();
     }

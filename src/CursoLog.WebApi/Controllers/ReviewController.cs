@@ -1,4 +1,5 @@
 ﻿using CursoLog.WebApi.DTOs;
+using CursoLog.WebApi.Extensions;
 using CursoLog.WebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ public class ReviewController : ControllerBase
         var result = await _reviewService.GetReviewByIdAsync(id);
 
         if (result.IsFailed)
-            return NotFound();
+            return result.ToActionResult(this);
 
         return Ok(result.Value);
     }
@@ -35,7 +36,7 @@ public class ReviewController : ControllerBase
         var result = await _reviewService.GetReviewsByCourseIdAsync(id);
 
         if (result.IsFailed) 
-            return NotFound();
+            return result.ToActionResult(this);
 
         return Ok(result.Value);
     }
@@ -49,7 +50,7 @@ public class ReviewController : ControllerBase
             userId, request.courseId, request.rating, request.comment);
 
         if (result.IsFailed)
-            return BadRequest(new { errors = result.Errors.Select(e => e.Message) });
+            return result.ToActionResult(this);
 
         return Ok(result.Value);
     }
@@ -62,7 +63,7 @@ public class ReviewController : ControllerBase
         var result = await _reviewService.UpdateReviewAsync(userId, id, request.rating, request.comment);
 
         if (result.IsFailed)
-            return BadRequest(new { errors = result.Errors.Select(e => e.Message) });
+            return result.ToActionResult(this);
 
         return NoContent();
     }
@@ -75,7 +76,7 @@ public class ReviewController : ControllerBase
         var result = await _reviewService.DeleteReviewAsync(userId, id);
 
         if (result.IsFailed)
-            return BadRequest(new { errors = result.Errors.Select(e => e.Message) });
+            return result.ToActionResult(this);
 
         return NoContent();
     }

@@ -1,6 +1,7 @@
 ﻿using CursoLog.WebApi.DTOs;
 using CursoLog.WebApi.Extensions.Mappings;
 using CursoLog.WebApi.Models;
+using CursoLog.WebApi.Models.Errors;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentResults;
@@ -23,7 +24,7 @@ public class CategoryService : ICategoryService
         var category = await _categoryRepository.GetByIdAsync(id);
 
         if (category is null)
-            return Result.Fail("Category not found");
+            return Result.Fail(new NotFoundError("Category not found"));
 
         return Result.Ok(category.ToCategoryResponse());
     }
@@ -53,8 +54,7 @@ public class CategoryService : ICategoryService
         if (category is null)
         {
             _logger.LogWarning("Failed to delete category with ID {CategoryId}. Reason: category not found", id);
-         
-            return Result.Fail("Category not found");
+            return Result.Fail(new NotFoundError("Category not found"));
         }
 
         await _categoryRepository.DeleteAsync(category);
@@ -69,7 +69,7 @@ public class CategoryService : ICategoryService
         if (category is null)
         {
             _logger.LogWarning("Failed to update category with ID {CategoryId}. Reason: category not found", id);
-            return Result.Fail("Category not found");
+            return Result.Fail(new NotFoundError("Category not found"));
         }
 
         category.Name = name;

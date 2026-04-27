@@ -1,6 +1,7 @@
 ﻿using CursoLog.WebApi.DTOs;
 using CursoLog.WebApi.Extensions.Mappings;
 using CursoLog.WebApi.Models;
+using CursoLog.WebApi.Models.Errors;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentResults;
@@ -34,7 +35,7 @@ public class InstructorService : IInstructorService
         var instructor = await _instructorRepository.GetByIdAsync(id);
 
         if (instructor is null)
-            return Result.Fail("Instructor not found");
+            return Result.Fail(new NotFoundError("Instructor not found"));
 
         return Result.Ok(instructor.ToInstructorResponse());
     }
@@ -57,7 +58,7 @@ public class InstructorService : IInstructorService
         if (instructor is null)
         {
             _logger.LogWarning("Failed to update instructor with ID {InstructorId}. Reason: instructor not found.", id);
-            return Result.Fail("Instructor not found");
+            return Result.Fail(new NotFoundError("Instructor not found"));
         }
 
         instructor.Name = name;
@@ -80,7 +81,7 @@ public class InstructorService : IInstructorService
         if (instructor is null)
         {
             _logger.LogWarning("Failed to delete instructor with ID {InstructorId}. Reason: instructor not found.", id);
-            return Result.Fail("Instructor not found");
+            return Result.Fail(new NotFoundError("Instructor not found"));
         }
 
         await _instructorRepository.DeleteAsync(instructor);

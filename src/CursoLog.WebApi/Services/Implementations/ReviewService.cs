@@ -1,6 +1,7 @@
 ﻿using CursoLog.WebApi.DTOs;
 using CursoLog.WebApi.Extensions.Mappings;
 using CursoLog.WebApi.Models;
+using CursoLog.WebApi.Models.Errors;
 using CursoLog.WebApi.Models.Exceptions;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
@@ -26,7 +27,7 @@ public class ReviewService : IReviewService
         var review = await _reviewRepository.GetByIdAsync(id);
 
         if (review is null)
-            return Result.Fail("Review not found");
+            return Result.Fail(new NotFoundError("Review not found"));
 
         return Result.Ok(review.ToReviewResponse());
     }
@@ -36,7 +37,7 @@ public class ReviewService : IReviewService
         var course = await _courseRepository.GetByIdAsync(courseId);
 
         if (course is null)
-            return Result.Fail("Course not found");
+            return Result.Fail(new NotFoundError("Course not found"));
 
         var reviews = await _reviewRepository.GetByCourseIdAsync(courseId);
 
@@ -47,11 +48,11 @@ public class ReviewService : IReviewService
     {
         var course = await _courseRepository.GetByIdAsync(courseId);
         if (course is null)
-            return Result.Fail("Course not found");
+            return Result.Fail(new NotFoundError("Course not found"));
 
         var userHasReview = await _reviewRepository.UserHasReviewAsync(userId, courseId);
         if (userHasReview)
-            return Result.Fail("Course already reviewed by the user");
+            return Result.Fail(new ConflictError("Course already reviewed by the user"));
 
         Review review;
         try
@@ -75,10 +76,10 @@ public class ReviewService : IReviewService
         var review = await _reviewRepository.GetByIdAsync(reviewId);
 
         if (review is null)
-            return Result.Fail("Review not found");
+            return Result.Fail(new NotFoundError("Review not found"));
 
         if (review.UserId != userId)
-            return Result.Fail("User don't have permission to updated this review");
+            return Result.Fail(new ForbidenError("User don't have permission to updated this review"));
 
         try
         {
@@ -101,10 +102,10 @@ public class ReviewService : IReviewService
         var review = await _reviewRepository.GetByIdAsync(reviewId);
 
         if (review is null)
-            return Result.Fail("Review not found");
+            return Result.Fail(new NotFoundError("Review not found"));
 
         if (review.UserId != userId)
-            return Result.Fail("User don't have permission to delete this review");
+            return Result.Fail(new ForbidenError("User don't have permission to delete this review"));
 
         await _reviewRepository.DeleteAsync(review);
 

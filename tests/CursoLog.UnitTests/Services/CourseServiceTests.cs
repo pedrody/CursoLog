@@ -4,6 +4,7 @@ using CursoLog.WebApi.Models.Enums;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Implementations;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 
@@ -33,12 +34,14 @@ public class CourseServiceTests
         _platformRepository = Substitute.For<IPlatformRepository>();
         _categoryRepository = Substitute.For<ICategoryRepository>();
         _technologyRepository = Substitute.For<ITechnologyRepository>();
+        var logger = Substitute.For<ILogger<CourseService>>();
         _courseService = new CourseService(
             _courseRepository, 
             _instructorRepository,
             _platformRepository,
             _categoryRepository,
-            _technologyRepository
+            _technologyRepository,
+            logger
         );
         _instructor = new(_faker.Name.FirstName(), _faker.Lorem.Text(), _faker.Internet.Url());
         _platform = new(_faker.Company.CompanyName(), _faker.Internet.Url());

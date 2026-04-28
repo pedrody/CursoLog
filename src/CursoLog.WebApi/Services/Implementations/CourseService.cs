@@ -1,4 +1,5 @@
-﻿using CursoLog.WebApi.DTOs.Course;
+﻿using CursoLog.WebApi.Constants;
+using CursoLog.WebApi.DTOs.Course;
 using CursoLog.WebApi.Extensions.Mappings;
 using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Models.Enums;
@@ -6,10 +7,11 @@ using CursoLog.WebApi.Models.Errors;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentResults;
-using System.Xml.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CursoLog.WebApi.Services.Implementations;
 
+[Authorize]
 public class CourseService : ICourseService
 {
     private readonly ICourseRepository _courseRepository;
@@ -17,19 +19,22 @@ public class CourseService : ICourseService
     private readonly IPlatformRepository _platformRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly ITechnologyRepository _technologyRepository;
+    private readonly ILogger<CourseService> _logger;
 
     public CourseService(
-        ICourseRepository courseRepository, 
-        IInstructorRepository instructorRepository, 
-        IPlatformRepository platformRepository, 
-        ICategoryRepository categoryRepository, 
-        ITechnologyRepository technologyRepository)
+        ICourseRepository courseRepository,
+        IInstructorRepository instructorRepository,
+        IPlatformRepository platformRepository,
+        ICategoryRepository categoryRepository,
+        ITechnologyRepository technologyRepository,
+        ILogger<CourseService> logger)
     {
         _courseRepository = courseRepository;
         _instructorRepository = instructorRepository;
         _platformRepository = platformRepository;
         _categoryRepository = categoryRepository;
         _technologyRepository = technologyRepository;
+        _logger = logger;
     }
 
     public async Task<Result<CourseDetailResponse>> GetCourseByIdAsync(Guid id)
@@ -49,6 +54,7 @@ public class CourseService : ICourseService
         return Result.Ok(courses.Select(c => c.ToCourseListResponse()));
     }
 
+    [Authorize(Roles = Roles.Admin)]
     public async Task<Result<CourseDetailResponse>> AddCourseAsync(string name, string? description, string url, CoursePriceRange priceRange, CourseDurationRange durationRange, CourseLanguage language, string? thumbnailUrl, Guid instructorId, Guid platformId, Guid categoryId, IEnumerable<Guid> technologiesId)
     {
         if (!await InstructorExists(instructorId))
@@ -75,6 +81,8 @@ public class CourseService : ICourseService
 
         var createdCourse = await _courseRepository.AddAsync(course);
 
+        _logger.LogInformation("Course \"{CourseId}\" created successfully.", course.Id);
+
         return Result.Ok(createdCourse.ToCourseDetailResponse());
     }
 
@@ -99,6 +107,8 @@ public class CourseService : ICourseService
 
         await _courseRepository.UpdateAsync(course);
 
+        _logger.LogInformation("Course \"{CourseId}\" updated successfully.", course.Id);
+
         return Result.Ok();
     }
 
@@ -110,6 +120,8 @@ public class CourseService : ICourseService
             return Result.Fail(new NotFoundError("Course not found"));
 
         await _courseRepository.DeleteAsync(course);
+
+        _logger.LogInformation("Course \"{CourseId}\" deleted successfully.", course.Id);
 
         return Result.Ok();
     }

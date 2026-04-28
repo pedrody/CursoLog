@@ -14,12 +14,14 @@ public class ReviewService : IReviewService
     private readonly IReviewRepository _reviewRepository;
     private readonly ICourseRepository _courseRepository;
     private readonly ILogger<ReviewService> _logger;
+    private readonly IUserService _userService;
 
-    public ReviewService(IReviewRepository reviewRepository, ICourseRepository courseRepository, ILogger<ReviewService> logger)
+    public ReviewService(IReviewRepository reviewRepository, ICourseRepository courseRepository, ILogger<ReviewService> logger, IUserService userService)
     {
         _reviewRepository = reviewRepository;
         _courseRepository = courseRepository;
         _logger = logger;
+        _userService = userService;
     }
 
     public async Task<Result<ReviewResponse>> GetReviewByIdAsync(Guid id)
@@ -40,6 +42,18 @@ public class ReviewService : IReviewService
             return Result.Fail(new NotFoundError("Course not found"));
 
         var reviews = await _reviewRepository.GetByCourseIdAsync(courseId);
+
+        return Result.Ok(reviews.Select(r => r.ToReviewResponse()));
+    }
+
+    public async Task<Result<IEnumerable<ReviewResponse>>> GetReviewsByUserIdAsync(Guid userId)
+    {
+        var user = await _userService.GetUserProfileByIdAsync(userId);
+        
+        if (user is null)
+            return Result.Fail(new NotFoundError("User not found"));
+
+        var reviews = await _reviewRepository.GetByUserIdAsync(userId);
 
         return Result.Ok(reviews.Select(r => r.ToReviewResponse()));
     }

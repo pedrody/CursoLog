@@ -3,7 +3,9 @@ using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Models.Enums;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Implementations;
+using CursoLog.WebApi.Services.Interfaces;
 using FluentAssertions;
+using FluentResults;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
@@ -16,6 +18,7 @@ public class ReviewServiceTests
     private readonly ReviewService _reviewService;
     private readonly IReviewRepository _reviewRepositoryMock;
     private readonly ICourseRepository _courseRepositoryMock;
+    private readonly IUserService _userServiceMock;
     private readonly Course _course;
     private readonly ApplicationUser _user;
     private readonly Review _review;
@@ -24,9 +27,10 @@ public class ReviewServiceTests
     {
         _reviewRepositoryMock = Substitute.For<IReviewRepository>();
         _courseRepositoryMock = Substitute.For<ICourseRepository>();
+        _userServiceMock = Substitute.For<IUserService>();
         var loggerMock = Substitute.For<ILogger<ReviewService>>();
         _reviewService = new ReviewService(_reviewRepositoryMock, _courseRepositoryMock,
-            loggerMock);
+            loggerMock, _userServiceMock);
 
         _course = new Course(
             "Course name",
@@ -280,7 +284,7 @@ public class ReviewServiceTests
         result.IsSuccess.Should().BeTrue();
         await _reviewRepositoryMock.Received(1).GetByIdAsync(_review.Id);
         await _reviewRepositoryMock.Received(1).DeleteAsync(Arg.Is<Review>(
-            r => r.Id == _review.Id 
+            r => r.Id == _review.Id
             && r.UserId == _user.Id));
     }
 
@@ -313,5 +317,39 @@ public class ReviewServiceTests
         result.IsFailed.Should().BeTrue();
         await _reviewRepositoryMock.Received(1).GetByIdAsync(_review.Id);
         await _reviewRepositoryMock.DidNotReceive().DeleteAsync(Arg.Any<Review>());
+    }
+
+    [Fact]
+    public async Task GetReviewsByUserIdAsync_GivenUserFound_ThenShouldReturnIEnumerableReviewResponse()
+    {
+        // Arrange
+        var reviews = new List<Review> { _review };
+        var userProfile = new UserProfileResponse(_user.Id, _user.UserName!, "Name", "Bio", "Url", DateTime.UtcNow);
+        _userServiceMock.GetUserProfileByIdAsync(_user.Id).Returns(userProfile);
+        _reviewRepositoryMock.GetByUserIdAsync(_user.Id).Returns(reviews);
+
+        // Act
+        var result = await _reviewService.GetReviewsByUserIdAsync(_user.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().AllBeOfType<ReviewResponse>();
+        await _userServiceMock.Received(1).GetUserProfileByIdAsync(_user.Id);
+        await _reviewRepositoryMock.Received(1).GetByUserIdAsync(_user.Id);
+    }
+
+    [Fact]
+    public async Task GetReviewsByUserIdAsync_GivenUserNotFound_ThenShouldReturnFailure()
+    {
+        // Arrange
+        _userServiceMock.GetUserProfileByIdAsync(_user.Id).ReturnsNull();
+
+        // Act
+        var result = await _reviewService.GetReviewsByUserIdAsync(_user.Id);
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+        await _userServiceMock.Received(1).GetUserProfileByIdAsync(_user.Id);
+        await _reviewRepositoryMock.DidNotReceive().GetByUserIdAsync(Arg.Any<Guid>());
     }
 }

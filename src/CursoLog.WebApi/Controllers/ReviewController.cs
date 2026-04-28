@@ -41,6 +41,17 @@ public class ReviewController : ControllerBase
         return Ok(result.Value);
     }
 
+    [HttpGet("user/{id:guid}")]
+    public async Task<ActionResult<IEnumerable<ReviewResponse>>> GetReviewsByUserIdAsync(Guid id)
+    {
+        var result = await _reviewService.GetReviewsByUserIdAsync(id);
+
+        if (result.IsFailed)
+            return result.ToActionResult(this);
+
+        return Ok(result.Value);
+    }
+
     [HttpPost]
     public async Task<ActionResult<ReviewResponse>> AddReview([FromBody] CreateReviewRequest request)
     {

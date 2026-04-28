@@ -29,6 +29,15 @@ public class ReviewRepository : IReviewRepository
             .ToListAsync() ;
     }
 
+    public async Task<IEnumerable<Review>> GetByUserIdAsync(Guid userId)
+    {
+        return await _context.Reviews
+            .Include(r => r.User)
+            .Include(r => r.Course)
+            .Where(r => r.UserId == userId)
+            .ToListAsync();
+    }
+
     public async Task<Review> AddAsync(Review review)
     {
         _context.Reviews.Add(review);

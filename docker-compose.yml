@@ -1,0 +1,46 @@
+name: cursolog_containers
+
+services:
+  cursolog_webapi:
+    container_name: api_container
+    ports:
+      - "5000:5000"
+    depends_on:
+      cursolog_database:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=postgres_db_container;Port=5432;Database=CursoLogDb;Username=postgres;Password=postgres;
+      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - cursolog_network
+
+  cursolog_database:
+    container_name: postgres_db_container
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=CursoLogDb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - PGDATA=/data/postgres
+    volumes:
+      - cursolog_postgres_data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    networks:
+      - cursolog_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  cursolog_network:
+    driver: bridge
+
+volumes:
+  cursolog_postgres_data:

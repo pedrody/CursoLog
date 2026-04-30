@@ -33,6 +33,7 @@ public class AuthService : IAuthService
         var user = new ApplicationUser
         {
             UserName = username,
+            Name = username,
             Email = email,
             RegisteredAt = DateTime.UtcNow
         };

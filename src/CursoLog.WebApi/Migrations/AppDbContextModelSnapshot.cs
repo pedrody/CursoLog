@@ -267,8 +267,8 @@ namespace CursoLog.WebApi.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Comment")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
 
                     b.Property<Guid>("CourseId")
                         .HasColumnType("uuid");

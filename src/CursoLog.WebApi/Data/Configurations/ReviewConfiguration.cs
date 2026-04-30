@@ -18,7 +18,7 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
             .HasColumnType("decimal(2,1)");
 
         builder.Property(r => r.Comment)
-            .HasMaxLength(1000);
+            .HasMaxLength(5000);
 
         builder.HasOne(r => r.Course)
             .WithMany(c => c.Reviews)

@@ -1,3 +1,9 @@
-﻿namespace CursoLog.WebApi.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record CreateReviewRequest(Guid courseId, decimal rating, string? comment);
+namespace CursoLog.WebApi.DTOs;
+
+public record CreateReviewRequest(
+    Guid courseId, 
+    decimal rating, 
+    [StringLength(5000)] string? comment
+);

@@ -1,4 +1,6 @@
-﻿namespace CursoLog.WebApi.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record CategoryUpdateRequest(string Name);
+namespace CursoLog.WebApi.DTOs;
+
+public record CategoryUpdateRequest([StringLength(100)] string Name);
 

@@ -1,3 +1,9 @@
-﻿namespace CursoLog.WebApi.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record InstructorUpdateRequest(string Name, string? Bio, string? ProfileUrl);
+namespace CursoLog.WebApi.DTOs;
+
+public record InstructorUpdateRequest(
+    [StringLength(100)] string Name,
+    [StringLength(500)] string? Bio,
+    [StringLength(200)] string? ProfileUrl
+);

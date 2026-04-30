@@ -1,4 +1,9 @@
-﻿namespace CursoLog.WebApi.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record RegisterRequest(string username, string email, string password);
+namespace CursoLog.WebApi.DTOs;
 
+public record RegisterRequest(
+    [StringLength(30, MinimumLength = 3)] string username, 
+    [StringLength(256)] [EmailAddress] string email, 
+    [StringLength(100)] string password
+);

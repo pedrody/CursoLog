@@ -1,3 +1,5 @@
-﻿namespace CursoLog.WebApi.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record CategoryCreateRequest(string Name);
+namespace CursoLog.WebApi.DTOs;
+
+public record CategoryCreateRequest([StringLength(100)] string Name);

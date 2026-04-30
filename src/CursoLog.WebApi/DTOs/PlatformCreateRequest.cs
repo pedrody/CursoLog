@@ -1,3 +1,5 @@
-﻿namespace CursoLog.WebApi.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record PlatformCreateRequest(string Name, string Url);
+namespace CursoLog.WebApi.DTOs;
+
+public record PlatformCreateRequest([StringLength(100)] string Name, [StringLength(200)] string Url);

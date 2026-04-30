@@ -10,9 +10,13 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
     {
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.UserName)
+            .IsRequired()
+            .HasMaxLength(30);
+
         builder.Property(x => x.Name)
             .IsRequired()
-            .HasMaxLength(100);
+            .HasMaxLength(30);
 
         builder.Property(x => x.ProfilePictureUrl)
             .HasMaxLength(200);

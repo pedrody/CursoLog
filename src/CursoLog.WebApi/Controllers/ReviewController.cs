@@ -7,7 +7,6 @@ using System.Security.Claims;
 
 namespace CursoLog.WebApi.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("/api/[controller]")]
 public class ReviewController : ControllerBase
@@ -52,6 +51,7 @@ public class ReviewController : ControllerBase
         return Ok(result.Value);
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<ReviewResponse>> AddReview([FromBody] CreateReviewRequest request)
     {
@@ -66,6 +66,7 @@ public class ReviewController : ControllerBase
         return Ok(result.Value);
     }
 
+    [Authorize]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> UpdateReview(Guid id, [FromBody] UpdateReviewRequest request)
     {
@@ -79,6 +80,7 @@ public class ReviewController : ControllerBase
         return NoContent();
     }
 
+    [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> DeleteReview(Guid id)
     {

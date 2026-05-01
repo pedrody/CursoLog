@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CursoLog.WebApi.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("/api/[controller]")]
 public class InstructorController : ControllerBase

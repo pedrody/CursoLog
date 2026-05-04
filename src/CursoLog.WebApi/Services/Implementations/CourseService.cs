@@ -57,13 +57,13 @@ public class CourseService : ICourseService
     [Authorize(Roles = Roles.Admin)]
     public async Task<Result<CourseDetailResponse>> AddCourseAsync(string name, string? description, string url, CoursePriceRange priceRange, CourseDurationRange durationRange, CourseLanguage language, string? thumbnailUrl, Guid instructorId, Guid platformId, Guid categoryId, IEnumerable<Guid> technologiesId)
     {
-        if (!await InstructorExists(instructorId))
+        if (!await _instructorRepository.ExistsAsync(instructorId))
             return Result.Fail(new NotFoundError("Instructor not found"));
 
-        if (!await PlatformExists(platformId))
+        if (!await _platformRepository.ExistsAsync(platformId))
             return Result.Fail(new NotFoundError("Platform not found"));
 
-        if (!await CategoryExists(categoryId))
+        if (!await _categoryRepository.ExistsAsync(categoryId))
             return Result.Fail(new NotFoundError("Category not found"));
 
         var technologies = new List<Technology>();
@@ -136,23 +136,5 @@ public class CourseService : ICourseService
             platformId, categoryId, technologiesId, averageRating);
 
         return courses.Select(c => c.ToCourseListResponse());
-    }
-
-    private async Task<bool> InstructorExists(Guid id)
-    {
-        var instructor = await _instructorRepository.GetByIdAsync(id);
-        return instructor is null ? false : true;
-    }
-
-    private async Task<bool> PlatformExists(Guid id)
-    {
-        var platform = await _platformRepository.GetByIdAsync(id); 
-        return platform is null ? false : true;
-    }
-
-    private async Task<bool> CategoryExists(Guid id)
-    {
-        var category = await _categoryRepository.GetByIdAsync(id); 
-        return category is null ? false : true;
     }
 }

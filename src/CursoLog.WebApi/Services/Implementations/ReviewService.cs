@@ -60,8 +60,8 @@ public class ReviewService : IReviewService
 
     public async Task<Result<ReviewResponse>> AddReviewAsync(Guid userId, Guid courseId, decimal rating, string? comment)
     {
-        var course = await _courseRepository.GetByIdAsync(courseId);
-        if (course is null)
+        var courseExists = await _courseRepository.ExistsAsync(courseId);
+        if (!courseExists)
             return Result.Fail(new NotFoundError("Course not found"));
 
         var userHasReview = await _reviewRepository.UserHasReviewAsync(userId, courseId);

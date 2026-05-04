@@ -1,10 +1,11 @@
 ﻿using CursoLog.WebApi.Data;
+using CursoLog.WebApi.Models;
 using CursoLog.WebApi.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace CursoLog.WebApi.Repositories.Implementations;
 
-public class Repository<T> : IRepository<T> where T : class
+public class Repository<T> : IRepository<T> where T : BaseEntity
 {
     protected readonly AppDbContext _context;
 
@@ -41,5 +42,10 @@ public class Repository<T> : IRepository<T> where T : class
     {
         _context.Set<T>().Remove(entity);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> ExistsAsync(Guid id)
+    {
+        return await _context.Set<T>().AnyAsync(e => e.Id == id);
     }
 }

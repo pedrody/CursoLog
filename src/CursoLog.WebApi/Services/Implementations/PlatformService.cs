@@ -5,6 +5,7 @@ using CursoLog.WebApi.Models.Errors;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace CursoLog.WebApi.Services.Implementations;
 
@@ -79,7 +80,16 @@ public class PlatformService : IPlatformService
             return Result.Fail(new NotFoundError("Platform not found"));
         }
 
-        await _platformRepository.DeleteAsync(platform);
+        try
+        {
+            await _platformRepository.DeleteAsync(platform);
+        }
+        catch (DbUpdateException)
+        {
+            _logger.LogError("Failed to delete platform with ID {PlatformId}. Reason: being used by one or more courses.", platform.Id);
+            return Result.Fail($"Platform '{platform.Name}' cannot be deleted because it is being used by one or more courses");
+        }
+
         _logger.LogInformation("Platform with ID {PlatformId} successfully deleted.", platform.Id);
         return Result.Ok();
     }

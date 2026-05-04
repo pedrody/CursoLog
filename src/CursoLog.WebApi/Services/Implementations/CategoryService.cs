@@ -5,6 +5,7 @@ using CursoLog.WebApi.Models.Errors;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace CursoLog.WebApi.Services.Implementations;
 
@@ -57,7 +58,16 @@ public class CategoryService : ICategoryService
             return Result.Fail(new NotFoundError("Category not found"));
         }
 
-        await _categoryRepository.DeleteAsync(category);
+        try
+        {
+            await _categoryRepository.DeleteAsync(category);
+        }
+        catch (DbUpdateException)
+        {
+            _logger.LogError("Failed to delete category with ID {CategoryId}. Reason: being used by one or more courses.", category.Id);
+            return Result.Fail($"Category '{category.Name}' cannot be deleted because it is being used by one or more courses");
+        }
+        
         _logger.LogInformation("Category with ID {CategoryId} successfully deleted.", category.Id);
         return Result.Ok();
     }

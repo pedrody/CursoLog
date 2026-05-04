@@ -5,6 +5,7 @@ using CursoLog.WebApi.Models.Errors;
 using CursoLog.WebApi.Repositories.Interfaces;
 using CursoLog.WebApi.Services.Interfaces;
 using FluentResults;
+using Microsoft.EntityFrameworkCore;
 using System.Runtime.InteropServices;
 
 namespace CursoLog.WebApi.Services.Implementations;
@@ -84,7 +85,16 @@ public class InstructorService : IInstructorService
             return Result.Fail(new NotFoundError("Instructor not found"));
         }
 
-        await _instructorRepository.DeleteAsync(instructor);
+        try
+        {
+            await _instructorRepository.DeleteAsync(instructor);
+        }
+        catch (DbUpdateException)
+        {
+            _logger.LogError("Failed to delete instructor with ID {InstructorId}. Reason: being used by one or more courses.", instructor.Id);
+            return Result.Fail($"Instructor '{instructor.Name}' cannot be deleted because it is being used by one or more courses");
+        }
+
         _logger.LogInformation("Instructor with ID {InstructorId} successfully deleted.", instructor.Id);
         return Result.Ok();
     }

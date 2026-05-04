@@ -3,13 +3,8 @@ using CursoLog.WebApi.Models.Enums;
 
 namespace CursoLog.WebApi.Repositories.Interfaces;
 
-public interface ICourseRepository
+public interface ICourseRepository : IRepository<Course>
 {
-    Task<Course?> GetByIdAsync(Guid id);
-    Task<IEnumerable<Course>> GetAllAsync();
-    Task<Course> AddAsync(Course course);
-    Task UpdateAsync(Course course);
-    Task DeleteAsync(Course course);
     Task<IEnumerable<Course>> GetByFilterAsync(
         string? name, CoursePriceRange? priceRange, CourseDurationRange? durationRange,
         CourseLanguage? language, Guid? instructorId, Guid? platformId,
